@@ -1,0 +1,44 @@
+h2, p {
+    margin: 0;
+}
+
+.movie-card {
+    margin: auto;
+    height: 281px;
+}
+
+.movie-card img {
+    height: 280px;
+    width: 183px;
+    object-fit: cover;
+    border-radius: 8px 0 0 8px;
+}
+
+.movie-card-info {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
+
+.movie-card-title{
+    padding-top: 10px;
+    margin-bottom: 7px;
+}
+
+.movie-card-release-date {
+    padding-bottom: 7px;
+}
+
+.movie-card-genre {
+    margin-bottom: 7px;
+}
+
+.movie-card-rate {
+    margin-top: auto;
+    margin-bottom: 30px;
+}
+
+.ant-card .ant-card-body {
+    padding: 0 20px 0 0;
+}
