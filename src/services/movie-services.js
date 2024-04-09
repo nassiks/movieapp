@@ -8,11 +8,22 @@ export default class MovieServices {
     return await res.json()
   }
 
-  async getAllMovie() {
+  async getPopularMovies(page = 1) {
+    const API_KEY = '00f653e348e3161b1f1cddf56b865aed'
+    const res = await this.getResource(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`)
+    return res.results.map(this.getMovie.bind(this))
+  }
+
+  async getAllMovie(searchTerm = '', page = 1) {
+    const API_KEY = '00f653e348e3161b1f1cddf56b865aed'
     const res = await this.getResource(
-      'https://api.themoviedb.org/3/search/movie?api_key=00f653e348e3161b1f1cddf56b865aed&query=return'
+      `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchTerm}&page=${page}`
     )
-    return res.results.slice(0, 6).map(this.getMovie)
+    return {
+      movies: res.results.map(this.getMovie.bind(this)),
+      totalResults: res.total_results,
+      totalPages: res.total_pages,
+    }
   }
 
   getMovie(movie) {

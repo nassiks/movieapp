@@ -2,13 +2,24 @@
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
-    background: white;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
 }
 
+.movie-card-list {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+    background: white;
+}
+
 .ant-list-grid .ant-col>.ant-list-item {
     margin-block-end: 0;
+}
+
+.ant-pagination .ant-pagination-options {
+    display: none;
 }
