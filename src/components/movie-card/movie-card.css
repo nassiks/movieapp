@@ -7,18 +7,11 @@ h2, p {
     height: 281px;
 }
 
-.movie-card img {
-    height: 280px;
-    width: 183px;
-    object-fit: cover;
-    border-radius: 8px 0 0 8px;
-}
-
 .movie-card-info {
     padding-left: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: space-between;
 }
 
 .movie-card-title{
@@ -36,9 +29,40 @@ h2, p {
 
 .movie-card-rate {
     margin-top: auto;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .ant-card .ant-card-body {
     padding: 0 20px 0 0;
+}
+
+.movie-card-info-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+@media (max-width: 991px){
+    .movie-card {
+        margin: auto;
+        max-height: 245px;
+    }
+
+    .movie-card-info {
+        min-height: 245px;
+        padding-left: 0;
+    }
+
+    .movie-card-genre {
+        margin-bottom: 19px;
+    }
+
+    .movie-card-rate {
+        margin-top: auto;
+        margin-bottom: 20px;
+    }
+
 }

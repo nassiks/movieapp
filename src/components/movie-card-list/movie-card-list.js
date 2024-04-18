@@ -1,15 +1,18 @@
 import React, { Component } from 'react'
-import { List, Spin, Alert, Input, Pagination } from 'antd'
+import { Spin, Alert, Tabs, Pagination } from 'antd'
 import { debounce } from 'lodash'
 
-import MovieCard from '../movie-card'
 import MovieServices from '../../services/movie-services'
+import Search from '../search'
+
+import MovieList from './movie-list'
 
 import './movie-card-list.css'
 
 export default class MovieCardList extends Component {
   state = {
     movies: [],
+    ratedMovies: [],
     loading: true,
     error: null,
     searchTerm: '',
@@ -20,7 +23,64 @@ export default class MovieCardList extends Component {
   movieService = new MovieServices()
 
   componentDidMount() {
+    if (!this.state.guestSessionId) {
+      this.initializeGuestSession()
+    }
     this.getMoviesOrPopular()
+    this.loadRatedMovies()
+  }
+
+  initializeGuestSession = async () => {
+    if (this.state.guestSessionId) {
+      return
+    }
+    try {
+      const guestSessionId = await this.movieService.initializeGuestSession()
+      this.setState({ guestSessionId })
+    } catch (error) {
+      this.setState({ error: error.message })
+    }
+  }
+
+  fetchRatedMovies = (movieRatings) => {
+    const movieIds = Object.keys(movieRatings)
+    const moviesPromises = movieIds.map((id) => this.movieService.getMovieDetails(id))
+
+    Promise.all(moviesPromises)
+      .then((movies) => {
+        const ratedMovies = movies.map((movie) => ({
+          ...movie,
+          userRating: movieRatings[movie.id],
+        }))
+        this.setState({ ratedMovies })
+      })
+      .catch((error) => {
+        this.setState({ error: error.message })
+      })
+  }
+
+  loadRatedMovies = () => {
+    try {
+      const savedMovieRatings = localStorage.getItem('movieRatings')
+      if (savedMovieRatings) {
+        const movieRatings = JSON.parse(savedMovieRatings)
+        this.fetchRatedMovies(movieRatings)
+      }
+    } catch (error) {
+      localStorage.removeItem('movieRatings')
+    }
+  }
+
+  rateMovie = (movie) => {
+    this.setState((prevState) => {
+      const updatedRatedMovies = [...prevState.ratedMovies, movie]
+      const movieRatings = updatedRatedMovies.reduce((acc, curr) => {
+        acc[curr.id] = curr.userRating
+        return acc
+      }, {})
+      localStorage.setItem('movieRatings', JSON.stringify(movieRatings))
+      return { ratedMovies: updatedRatedMovies }
+    })
   }
 
   getMoviesOrPopular() {
@@ -33,21 +93,14 @@ export default class MovieCardList extends Component {
     }
   }
 
-  handleSearch = debounce((searchTerm) => {
-    this.setState({ searchTerm, currentPage: 1, loading: true }, () => {
-      this.getMovies()
-    })
-  }, 500)
-
   getMovies() {
     const { searchTerm, currentPage } = this.state
 
     this.movieService
       .getAllMovie(searchTerm, currentPage)
       .then((data) => {
-        console.log(data)
         this.setState({
-          movies: data.movies, // Direct assignment without spread operator
+          movies: data.movies,
           totalResults: data.totalResults,
           loading: false,
         })
@@ -60,15 +113,22 @@ export default class MovieCardList extends Component {
       })
   }
 
+  handleSearch = debounce((searchTerm) => {
+    this.setState({ searchTerm, currentPage: 1, loading: true }, () => {
+      this.getMovies()
+    })
+  }, 500)
+
   handlePaginationChange = (page) => {
     this.setState({ currentPage: page, loading: true }, () => {
-      this.getMovies()
+      this.getMoviesOrPopular()
     })
   }
 
   updateMoviesState = (movies) => {
     this.setState({
-      movies: movies,
+      movies: movies.movies,
+      totalResults: movies.totalResults || 0,
       loading: false,
       error: null,
     })
@@ -82,8 +142,7 @@ export default class MovieCardList extends Component {
   }
 
   render() {
-    const { movies, loading, error, currentPage, totalResults, searchTerm } = this.state
-    const noResults = !loading && (movies || []).length === 0 && searchTerm
+    const { movies, ratedMovies, loading, error, currentPage, totalResults, searchTerm } = this.state
 
     if (error) {
       return (
@@ -101,11 +160,11 @@ export default class MovieCardList extends Component {
       )
     }
 
-    return (
-      <div className="movie-card-list">
-        <div className="movie-list-search">
-          <Input placeholder="Type to search..." onChange={(e) => this.handleSearch(e.target.value)} />
-        </div>
+    const noResults = !loading && (movies || []).length === 0 && searchTerm
+
+    const searchTabContent = (
+      <div>
+        <Search onSearch={this.handleSearch} />
         <div className="movie-list-container">
           {noResults ? (
             <Alert
@@ -115,23 +174,7 @@ export default class MovieCardList extends Component {
               showIcon
             />
           ) : (
-            <List
-              grid={{
-                gutter: [36, 36],
-                xs: 1,
-                sm: 1,
-                md: 2,
-                lg: 2,
-                xl: 2,
-                xxl: 2,
-              }}
-              dataSource={movies}
-              renderItem={(movie) => (
-                <List.Item>
-                  <MovieCard movie={movie} />
-                </List.Item>
-              )}
-            />
+            <MovieList movies={movies} onRate={this.rateMovie} />
           )}
         </div>
         <div className="movie-card-pagination">
@@ -139,5 +182,31 @@ export default class MovieCardList extends Component {
         </div>
       </div>
     )
+
+    const ratedTabContent = (
+      <div>
+        <div className="movie-list-container-rated">
+          <MovieList movies={ratedMovies} />
+        </div>
+        <div className="movie-card-pagination">
+          <Pagination current={currentPage} pageSize={20} onChange={this.handlePaginationChange} />
+        </div>
+      </div>
+    )
+
+    const items = [
+      {
+        label: 'Search',
+        key: 'search',
+        children: searchTabContent,
+      },
+      {
+        label: 'Rated',
+        key: 'rated',
+        children: ratedTabContent,
+      },
+    ]
+
+    return <Tabs defaultActiveKey="search" items={items} destroyInactiveTabPane={false} />
   }
 }

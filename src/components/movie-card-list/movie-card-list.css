@@ -8,6 +8,16 @@
     min-height: 100vh;
 }
 
+.movie-list-container-rated{
+    padding: 36px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .movie-card-list {
     display: flex;
     justify-content: space-around;
@@ -22,4 +32,25 @@
 
 .ant-pagination .ant-pagination-options {
     display: none;
+}
+
+.movie-card-pagination {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.movie-list-search, .ant-tabs .ant-tabs-nav {
+    padding: 19px 20px 0;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.ant-tabs .ant-tabs-nav .ant-tabs-nav-wrap {
+    justify-content: center;
+}
+
+@media (max-width: 991px){
+
 }

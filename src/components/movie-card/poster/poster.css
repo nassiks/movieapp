@@ -1,0 +1,25 @@
+.movie-card-image-container {
+    height: 280px;
+    width: 183px;
+    border-radius: 8px 0 0 8px;
+}
+
+.movie-card img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px 0 0 8px;
+}
+
+@media (max-width: 991px) {
+    .movie-card-image-container {
+        height: 91px;
+        width: 60px;
+        border-radius: 0;
+        margin: 6px 13px 10px 10px;
+    }
+    .movie-card img {
+        border-radius: 0;
+    }
+
+}

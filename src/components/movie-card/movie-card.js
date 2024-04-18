@@ -1,16 +1,21 @@
 import React, { Component } from 'react'
-import { Card, Rate, Tag, Row, Col } from 'antd'
+import { Card, Rate, Row, Col } from 'antd'
 import { format, parse, isValid } from 'date-fns'
 
 import './movie-card.css'
+import GenreContext from '../genre-context/genre-contex'
+
+import RatingCircle from './rating-circle'
+import Poster from './poster'
+import Genre from './genre'
 
 function truncateText(text, maxLength) {
   if (text.length <= maxLength) {
     return text
   }
 
-  let truncated = text.substr(0, maxLength)
-  truncated = truncated.substr(0, Math.min(truncated.length, truncated.lastIndexOf(' ')))
+  let truncated = text.substring(0, maxLength)
+  truncated = truncated.substring(0, Math.min(truncated.length, truncated.lastIndexOf(' ')))
 
   return truncated + '...'
 }
@@ -24,27 +29,57 @@ function formatDate(dateString) {
 }
 
 export default class MovieCard extends Component {
+  constructor(props) {
+    super(props)
+    const savedRatings = JSON.parse(localStorage.getItem('movieRatings')) || {}
+    const userRating = savedRatings[props.movie.id] || 0
+    this.state = {
+      userRating: userRating,
+    }
+  }
+
+  handleRatingChange = (newRating) => {
+    const { movie } = this.props
+    this.setState({ userRating: newRating })
+    const ratings = JSON.parse(localStorage.getItem('movieRatings')) || {}
+    ratings[movie.id] = newRating
+    localStorage.setItem('movieRatings', JSON.stringify(ratings))
+  }
+
   render() {
     const { imageUrl, title, rating, genre, description, releaseDate } = this.props.movie
     const maxLength = 150
 
     return (
-      <Card hoverable className="movie-card">
-        <Row wrap={false}>
-          <Col flex="none">
-            <img alt={title} src={imageUrl} className="movie-card-image" />
-          </Col>
-          <Col flex="auto" className="movie-card-info">
-            <h2 className="movie-card-title">{title}</h2>
-            <div className="movie-card-release-date">{formatDate(releaseDate)}</div>
-            <div className="movie-card-genre">
-              <Tag className="movie-card-genre">{genre}</Tag>
-            </div>
-            <p className="movie-card-description">{truncateText(description, maxLength)}</p>
-            <Rate className="movie-card-rate" count={10} allowHalf disabled value={rating} />
-          </Col>
-        </Row>
-      </Card>
+      <GenreContext.Consumer>
+        {({ genres }) => (
+          <Card hoverable className="movie-card">
+            <Row wrap={false}>
+              <Col flex="none">
+                <Poster src={imageUrl} title={title} />
+              </Col>
+              <Col flex="auto" className="movie-card-info">
+                <div className="movie-card-info-header">
+                  <h2 className="movie-card-title">{title}</h2>
+                  <RatingCircle rating={rating}></RatingCircle>
+                </div>
+                <div className="movie-card-release-date">{formatDate(releaseDate)}</div>
+                <div className="movie-card-genre">
+                  <Genre genreIds={genre} genres={genres} />
+                </div>
+                <p className="movie-card-description">{truncateText(description, maxLength)}</p>
+                <Rate
+                  className="movie-card-rate"
+                  count={10}
+                  allowHalf
+                  value={this.state.userRating}
+                  onChange={this.handleRatingChange}
+                />
+              </Col>
+            </Row>
+          </Card>
+        )}
+      </GenreContext.Consumer>
     )
   }
 }

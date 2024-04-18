@@ -1,0 +1,14 @@
+.movie-card-rating-circle {
+    font-size: 12px;
+    line-height: 22px;
+    padding: 8px;
+    width: 30px;
+    height: 30px;
+    border: 2px solid black;
+    border-radius: 50%;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
