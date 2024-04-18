@@ -207,6 +207,6 @@ export default class MovieCardList extends Component {
       },
     ]
 
-    return <Tabs defaultActiveKey="search" items={items} destroyInactiveTabPane={false} />
+    return <Tabs defaultActiveKey="search" items={items} />
   }
 }

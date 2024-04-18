@@ -1,5 +1,6 @@
 import { Input } from 'antd'
 import React from 'react'
+import PropTypes from 'prop-types'
 import { debounce } from 'lodash'
 
 import './search.css'
@@ -13,4 +14,12 @@ export default function Search({ onSearch }) {
       <Input placeholder="Type to search..." onChange={(e) => handleSearch(e.target.value)} />
     </div>
   )
+}
+
+Search.defaultProps = {
+  onSearch: () => {},
+}
+
+Search.propTypes = {
+  onSearch: PropTypes.func,
 }

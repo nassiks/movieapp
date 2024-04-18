@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Tag } from 'antd'
 
 function Genre({ genreIds, genres }) {
@@ -12,6 +13,21 @@ function Genre({ genreIds, genres }) {
       </Tag>
     ) : null
   })
+}
+
+Genre.propTypes = {
+  genreIds: PropTypes.arrayOf(PropTypes.number),
+  genres: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ),
+}
+
+Genre.defaultProps = {
+  genreIds: [],
+  genres: [],
 }
 
 export default Genre

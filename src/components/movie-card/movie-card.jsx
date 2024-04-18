@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Card, Rate, Row, Col } from 'antd'
 import { format, parse, isValid } from 'date-fns'
 
@@ -29,6 +30,29 @@ function formatDate(dateString) {
 }
 
 export default class MovieCard extends Component {
+  static defaultProps = {
+    movie: {
+      id: '',
+      imageUrl: '',
+      title: 'Unknown title',
+      rating: 0,
+      genre: [],
+      description: '',
+      releaseDate: '',
+    },
+  }
+
+  static propTypes = {
+    movie: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      imageUrl: PropTypes.string,
+      title: PropTypes.string,
+      rating: PropTypes.number,
+      genre: PropTypes.arrayOf(PropTypes.number),
+      description: PropTypes.string,
+      releaseDate: PropTypes.string,
+    }),
+  }
   constructor(props) {
     super(props)
     const savedRatings = JSON.parse(localStorage.getItem('movieRatings')) || {}

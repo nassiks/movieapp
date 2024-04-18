@@ -1,10 +1,10 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { List } from 'antd'
 
 import MovieCard from '../../movie-card'
 
 function MovieList({ movies, onRate }) {
-  console.log(movies)
   return (
     <List
       grid={{
@@ -26,4 +26,13 @@ function MovieList({ movies, onRate }) {
   )
 }
 
+MovieList.defaultProps = {
+  movies: [],
+  onRate: () => {},
+}
+
+MovieList.propTypes = {
+  movies: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onRate: PropTypes.func,
+}
 export default MovieList

@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import './rating-circle.css'
 
@@ -19,6 +20,14 @@ function RatingCircle({ rating }) {
       {parseFloat(rating.toFixed(1))}
     </div>
   )
+}
+
+RatingCircle.defaultProps = {
+  rating: 0,
+}
+
+RatingCircle.propTypes = {
+  rating: PropTypes.number,
 }
 
 export default RatingCircle
